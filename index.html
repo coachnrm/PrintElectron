@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ทดสอบการพิมพ์</title>
+</head>
+<body>
+  <h1>Electron Auto Print</h1>
+  <button id="print">Print Document</button>
+
+  <script>
+    document.getElementById('print').addEventListener('click', () => {
+      window.electronAPI.printDocument();
+    });
+  </script>
+</body>
+</html>
