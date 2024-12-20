@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bind Input Example</title>
+</head>
+<body>
+    <div id="data-container">
+        <form id="authen-form">
+            <label for="pid">เลขบัตรประจำตัวประชาชน (PID):</label>
+            <input type="text" id="pid" name="pid"><br><br>
+
+            <label for="fname">ชื่อ (First Name):</label>
+            <input type="text" id="fname" name="fname"><br><br>
+
+            <label for="lname">นามสกุล (Last Name):</label>
+            <input type="text" id="lname" name="lname"><br><br>
+
+            <label for="lname">สิทธิ์การรักษา:</label>
+            <input type="text" id="subInscl" name="subInscl"><br><br>
+        </form>
+    </div>
+
+    <script>
+        // Function to fetch and bind data
+        async function fetchAndBindData() {
+            try {
+                // Fetch data from Electron API
+                const data = await window.electronAPI.fetchAuthenData();
+
+                // Check for errors
+                if (data.error) {
+                    alert(`Error fetching data: ${data.error}`);
+                    return;
+                }
+
+                // Populate input fields
+                document.getElementById('pid').value = data.pid || ''; // Set PID
+                document.getElementById('fname').value = data.fname || ''; // Set First Name
+                document.getElementById('lname').value = data.lname || ''; // Set Last Name
+                document.getElementById('subInscl').value = data.subInscl || ''; // Set SubIsncl
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('An error occurred while fetching data. Please try again.');
+            }
+        }
+
+        // Call the fetchAndBindData function when the DOM is loaded
+        window.addEventListener('DOMContentLoaded', fetchAndBindData);
+    </script>
+</body>
+</html>
+
+
