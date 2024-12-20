@@ -19,6 +19,10 @@
 
             <label for="lname">สิทธิ์การรักษา:</label>
             <input type="text" id="subInscl" name="subInscl"><br><br>
+
+            <label for="lname">HN</label>
+            <input type="text" id="hn" name="hn"><br><br>
+            <button type="button" id="save">Open Visit</button>
         </form>
     </div>
 
@@ -45,6 +49,54 @@
                 alert('An error occurred while fetching data. Please try again.');
             }
         }
+
+        // Function to collect data and send POST request
+        async function openVisit() {
+            try {
+        // Get HN value from the form
+        const hn = document.getElementById('hn').value;
+
+        if (!hn) {
+            alert('HN is required to open a visit.');
+            return;
+        }
+
+        // Define API URL with HN as a query parameter
+        const url = `http://localhost:5094/api/Hos/OpenVisitWithKey?hn=${encodeURIComponent(hn)}`;
+
+        // Set up the request options
+        const requestOptions = {
+            method: 'POST', // Specify the HTTP method
+            headers: {
+                'Accept': '*/*', // Optional accept header
+                'Content-Type': 'application/json' // Set the request header for JSON
+            },
+            body: '' // Empty body as per the curl command
+        };
+
+        // Make the POST request
+        const response = await fetch(url, requestOptions);
+
+        // Check if the response is OK
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Parse the JSON response
+        const responseData = await response.json();
+
+        // Show success message
+        alert('Visit opened successfully!');
+        console.log('Response:', responseData);
+    } catch (error) {
+        console.error('Error posting visit data:', error);
+        alert('An error occurred while posting visit data. Please try again.');
+    }
+}
+
+        // Event listener for Save button
+        document.getElementById('save').addEventListener('click', openVisit);
+
 
         // Call the fetchAndBindData function when the DOM is loaded
         window.addEventListener('DOMContentLoaded', fetchAndBindData);

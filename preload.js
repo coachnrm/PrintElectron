@@ -30,5 +30,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
       console.error('Error fetching ward data:', error);
       throw error; // Re-throw error to handle it in the renderer process
     }
-  },
+  }
+
 });
