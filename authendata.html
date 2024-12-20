@@ -19,6 +19,81 @@
             <!-- Data rows will be added here dynamically -->
           </tbody>
         </table>
-      </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Fetch authen data from the API
+                const data = await window.electronAPI.fetchAuthenData();
+                const tableBody = document.getElementById('authen-table').querySelector('tbody');
+                if (data.error) {
+                // Display error message if there's an issue
+                const errorRow = document.createElement('tr');
+                const errorCell = document.createElement('td');
+                errorCell.colSpan = 3;
+                errorCell.innerText = `Error: ${data.error}`;
+                errorRow.appendChild(errorCell);
+                tableBody.appendChild(errorRow);
+                } else {
+                // Transform the JSON object into the desired format
+                const transformedData = {
+                        authen: {
+                            authenpid: data.pid,
+                            authenfname: data.fname,
+                            authenlname: data.lname,
+                            authennation: data.nation,    // Nation Code
+                            authenbirthDate: data.birthDate, // Birth Date
+                            authensex: data.sex,          // Sex
+                            authenmainInscl: data.mainInscl, // Main Insurance Class
+                            authensubInscl: data.subInscl,   // Sub Insurance Class
+                            authenage: data.age,          // Age
+                            authencheckDate: data.checkDate, // Last Check Date
+                            authenclaimTypes: data.claimTypes.map(claim => ({
+                                claimType: claim.claimType,       // Claim Type Code
+                                claimTypeName: claim.claimTypeName // Claim Type Name
+                            }))
+                        }
+                    };
+
+                // Create a new table row
+                const row = document.createElement('tr');
+
+                // Create pid cell
+                const pidCell = document.createElement('td');
+                pidCell.innerText = transformedData.authen.authenpid;
+
+                // Create fname cell
+                const fnameCell = document.createElement('td');
+                fnameCell.innerText = transformedData.authen.authenfname;
+
+                // Create lname cell
+                const lnameCell = document.createElement('td');
+                lnameCell.innerText = transformedData.authen.authenlname;
+
+                // Append cells to the row
+                row.appendChild(pidCell);
+                row.appendChild(fnameCell);
+                row.appendChild(lnameCell);
+
+                // Append the row to the table body
+                tableBody.appendChild(row);
+
+                // Trigger print automatically after data is rendered
+                window.electronAPI.printDocument();
+
+                }        
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                const tableBody = document.getElementById('authen-table').querySelector('tbody');
+                const errorRow = document.createElement('tr');
+                const errorCell = document.createElement('td');
+                errorCell.colSpan = 3;
+                errorCell.innerText = 'Error fetching data. Please try again.';
+                errorRow.appendChild(errorCell);
+                tableBody.appendChild(errorRow);
+            }
+        });
+    </script>
 </body>
 </html>
