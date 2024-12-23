@@ -23,6 +23,8 @@
             <label for="lname">HN</label>
             <input type="text" id="hn" name="hn"><br><br>
             <button type="button" id="save">Open Visit</button>
+            <button type="button" id="save2">Open Visit(Axios)</button>
+            <button type="button" id="back">Go back</button>
         </form>
     </div>
 
@@ -49,6 +51,7 @@
                 alert('An error occurred while fetching data. Please try again.');
             }
         }
+
 
         // Function to collect data and send POST request
         async function openVisit() {
@@ -88,18 +91,48 @@
         // Show success message
         alert('Visit opened successfully!');
         console.log('Response:', responseData);
-    } catch (error) {
-        console.error('Error posting visit data:', error);
-        alert('An error occurred while posting visit data. Please try again.');
+        } catch (error) {
+            console.error('Error posting visit data:', error);
+            alert('An error occurred while posting visit data. Please try again.');
+        }
     }
-}
 
         // Event listener for Save button
         document.getElementById('save').addEventListener('click', openVisit);
 
+        // Event listener for Save2 button
+        document.getElementById('save2').addEventListener('click', async () => {
+            // Retrieve the value of HN from the input field
+            const hn = document.getElementById('hn').value;
 
-        // Call the fetchAndBindData function when the DOM is loaded
-        window.addEventListener('DOMContentLoaded', fetchAndBindData);
+            if (!hn) {
+                alert('Please enter an HN.');
+                return;
+            }
+
+            try {
+                // Pass the hn parameter to the openVisit function
+                const result = await window.electronAPI.openVisit(hn);
+
+                // Handle the result
+                console.log('Open Visit Result:', result);
+                alert('Visit opened successfully.');
+            } catch (error) {
+                // Handle any errors
+                console.error('Error opening visit:', error);
+                alert('Failed to open visit. Please check the console for details.');
+            }
+        });
+
+
+    // Call the fetchAndBindData function when the DOM is loaded
+    window.addEventListener('DOMContentLoaded', fetchAndBindData);
+    
+    // Event listener for Back button
+    document.getElementById('back').addEventListener('click', () => {
+        window.location.href = 'index.html'; // Navigate to index.html
+    });
+
     </script>
 </body>
 </html>

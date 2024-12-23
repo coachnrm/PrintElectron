@@ -2,6 +2,9 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   printDocument: () => ipcRenderer.send('print-document'),
+  openVisit: async (hn) => {
+    return ipcRenderer.invoke('open-visit', hn);
+  },
 
   // New function to fetch data from API
   fetchWardData: async () => {
@@ -30,6 +33,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
       console.error('Error fetching ward data:', error);
       throw error; // Re-throw error to handle it in the renderer process
     }
-  }
+  },
 
+   
 });

@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const axios = require('axios');
 
 let mainWindow;
 
@@ -32,6 +33,48 @@ ipcMain.on('print-document', (event) => {
       console.error(`Failed to print: ${errorType}`);
     }
   });
+});
+
+ipcMain.handle('open-visit', async (event, hn) => {
+  if (!hn) {
+    throw new Error('HN is required to open a visit.');
+  }
+
+ // Prepare the request body
+ const requestBody = {
+  hn,
+  staff: '1234', // Example: Required field
+  curDep: 'OPD', // Example: Required field
+  doctor: '5678', // Example: Required field
+  nodeId: "ABCD123", // Nullable field
+  pttype: 'Insurance', // Example: Required field
+  rfrocs: "Procedure", // Nullable field
+  spclty: 'General', // Example: Required field
+  hospsub: "SubUnit", // Nullable field
+  lastDep: 'ER', // Example: Required field
+  mainDep: 'OPD', // Example: Required field
+  ovstist: "Active", // Nullable field
+  ovstost: 'Started', // Example: Required field
+  hospmain: "MainHospital", // Nullable field
+  pttypeno: '001', // Example: Required field
+  hasInsurance: 'true', // Example: Required field
+  ovstDto: { // Required nested object
+    visitDate: '2024-12-23',
+    visitType: "Regular", // Nullable field in nested object
+    otherDetails: 'Any other required data',
+  },
+};
+
+  try {
+    const response = await axios.post('http://localhost:5094/api/Hos/OpenVisitWithKey', requestBody, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log('API Response:', response.data);
+  } catch (error) {
+    console.error('Error:', error.response?.data || error.message);
+  }
 });
 
 app.on('window-all-closed', () => {
