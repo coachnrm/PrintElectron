@@ -6,68 +6,55 @@
     <title>Bind Input Example</title>
 </head>
 <body>
-    <br />
-    <br />
-    <br />
     <div id="data-container">
         <form id="authen-form">
             <table id="authen-table" !border="1">
                 <tr>
-                    <td colspan="2"><h2><span id="date"></span></h2></td>
+                    <td colspan="2"><h3><span id="date"></span></h3></td>
                 </tr>
                 <tr>
-                    <td><label for="hn"><h2>HN :</h2></label></td>
-                    <td><input type="text" id="hn" name="hn" style="margin-top: 0.5rem; font-size: 1.5rem; width: 420px;"></td>
+                    <td><label for="hn">HN :</label></td>
+                    <td><input type="text" id="hn" name="hn"></td>
                 </tr>
                 <tr>
-                    <td><label for="pid"><h2>เลขบัตรประจำตัวประชาชน (PID):</h2></label></td>
-                    <td><input type="text" id="pid" name="pid" style="margin-top: 0.5rem; font-size: 1.5rem; width: 420px;"></td>
+                    <td><label for="pid">เลขบัตรประจำตัวประชาชน (PID):</label></td>
+                    <td><input type="text" id="pid" name="pid"></td>
                 </tr>
                 <tr>
-                    <td><label for="fname"><h2>ชื่อ (First Name):</h2></label></td>
-                    <td><input type="text" id="fname" name="fname" style="margin-top: 0.5rem; font-size: 1.5rem; width: 420px;"></td>
+                    <td><label for="fname">ชื่อ (First Name):</label></td>
+                    <td><input type="text" id="fname" name="fname"></td>
                 </tr>
                 <tr>
-                    <td><label for="lname"><h2>นามสกุล (Last Name):</h2></label></td>
-                    <td><input type="text" id="lname" name="lname" style="margin-top: 0.5rem; font-size: 1.5rem; width: 420px;"></td>
+                    <td><label for="lname">นามสกุล (Last Name):</label></td>
+                    <td><input type="text" id="lname" name="lname"></td>
                 </tr>
                 <tr>
-                    <td><label for="lname"><h2>สิทธิ์การรักษา:</h2></label></td>
-                    <td><input type="text" id="subInscl" name="subInscl" style="margin-top: 0.5rem; font-size: 1.5rem; width: 420px;"></td>
+                    <td><label for="lname">สิทธิ์การรักษา:</label></td>
+                    <td><input type="text" id="subInscl" name="subInscl"></td>
                 </tr>
                 <tr>
-                    <td><label for="correlationId"><h2>CorrelationId</h2></label></td>
-                    <td><input type="text" id="correlationId" name="correlationId" style="margin-top: 0.5rem; font-size: 1.5rem; width: 420px;"></td>
-                </tr>
-                <tr>
-                    <td><label for="hospMain" hidden="hidden"><h2>hospMain</h2></label></td>
-                    <td><input type="text" id="hospMain" name="hospMain" style="margin-top: 0.5rem; font-size: 1.5rem; width: 420px;" hidden="hidden"></td>
-                </tr>
-                <tr>
-                    <td><label for="claimCode" hidden="hidden"><h2>claimCode</h2></label></td>
-                    <td><input type="text" id="claimCode" name="claimCode" style="margin-top: 0.5rem; font-size: 1.5rem; width: 420px;" hidden="hidden"></td>
+                    <td><label for="correlationId">CorrelationId</label></td>
+                    <td><input type="text" id="correlationId" name="correlationId"></td>
                 </tr>
               </table>
 
             <!-- <img id="patientImage" width="100" height="120" alt="Patient Image" /> -->
 
-            <button type="button" id="authen" hidden="hidden">Authen</button>
-            <button type="button" id="save" hidden="hidden">Open Visit</button>
-            <button type="button" id="save2" hidden="hidden">Open Visit(Axios)</button>
-            <button type="button" id="back" hidden="hidden">Go back</button>
+            <button type="button" id="authen">Authen</button>
+            <button type="button" id="save">Open Visit</button>
+            <button type="button" id="save2">Open Visit(Axios)</button>
+            <button type="button" id="back">Go back</button>
         </form>
     </div>
 
     <script>
         // Function to fetch and bind data
         async function fetchAndBindData() {
-            // try {
+            try {
                 // Fetch data from Electron API
                 const data = await window.electronAPI.fetchAuthenData();
-                // const cdata = await window.electronAPI.fetchCData();
-                const patients = await fetch(`http://172.16.200.202:8089/api/Hos/getpatienthnimage?_cid=${data.pid}`).then(res => res.json());
-                const claimCode = await fetch(`http://localhost:8189/api/nhso-service/latest-authen-code/${data.pid}`).then(res => res.json());
-                // const patients = await window.electronAPI.fetchPatientData();
+                const patients = await fetch(`http://localhost:5094/api/Hos/getpatienthnimage?_cid=${data.pid}`).then(res => res.json());
+                // const padata = await window.electronAPI.fetchPatientData();
 
                 // Check for errors
                 if (data.error) {
@@ -81,24 +68,16 @@
                 document.getElementById('lname').value = data.lname || ''; // Set Last Name
                 document.getElementById('subInscl').value = data.subInscl || ''; // Set SubIsncl
                 document.getElementById('correlationId').value = data.correlationId || ''; // Set SubIsncl
-                // document.getElementById('hospMain').value = data.hospMain.hcode || "10734"; // Set SubIsncl
                 document.getElementById('hn').value = patients.hn || ''; // Set SubIsncl
-                if (data.hospMain == "" || data.hospMain == null) {
-                    document.getElementById('hospMain').value = "10734";
-                } else {
-                    document.getElementById('hospMain').value = data.hospMain.hcode;
-                    // document.getElementById('hospMain').value = "99999";
-                }
-                document.getElementById('claimCode').value = claimCode.claimCode;
                 // const data1 = await patients.json();
 
                 // const imageBase64 = patients.pImage;
                 // const imgTag = document.getElementById('patientImage');
                 // document.getElementById('patientImage') = `data:image/jpeg;base64,${imageBase64}`;
-            // } catch (error) {
-            //     console.error('Error fetching data:', error);
-            //     alert('An error occurred while fetching data. Please try again.');
-            // }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('An error occurred while fetching data. Please try again.');
+            }
         }
 
 
@@ -114,7 +93,7 @@
         }
 
         // Define API URL with HN as a query parameter
-        const url = `http://172.16.200.202:8089/api/Hos/OpenVisitWithKey?hn=${encodeURIComponent(hn)}`;
+        const url = `http://localhost:5094/api/Hos/OpenVisitWithKey?hn=${encodeURIComponent(hn)}`;
 
         // Set up the request options
         const requestOptions = {
@@ -155,23 +134,12 @@
         const mobile = "034429333";
         const correlationId = document.getElementById('correlationId').value;
         const hn = document.getElementById('hn').value;
-        const hcode = document.getElementById('hospMain').value;
-        const claimCode = document.getElementById('claimCode').value;
+        const hcode = "10734";
 
         if (!hn) {
-            //alert('กรุณาเสียบบัตร');
-            setInterval(() => {
-                try {
-                    // Force the page to refresh
-                    location.reload();
-                } catch (error) {
-                    // Handle any errors that may occur during the refresh attempt
-                    console.error('Error during page refresh:', error);
-                    alert('An error occurred while refreshing the page.');
-                }
-            }, 1000); // 10000 milliseconds = 10 seconds
-                        return;
-                    }
+            alert('HN is required to open a visit.');
+            return;
+        }
 
         // Define API URL with HN as a query parameter
         const url = `http://localhost:8189/api/nhso-service/confirm-save`;
@@ -183,7 +151,6 @@
             mobile: mobile,
             correlationId: correlationId,
             hn: hn,
-            claimCode: claimCode,
             hcode: hcode
         };
         
@@ -221,10 +188,6 @@
 
         // Event listener for Save button
         document.getElementById('authen').addEventListener('click', postAuthen);
-        // จำลองการคลิกปุ่ม 'authen' อัตโนมัติหลังจาก 3 วินาที
-       setTimeout(function() {
-       document.getElementById('authen').click(); // จำลองการคลิกอัตโนมัติ
-       }, 1000); // คลิกหลังจาก 3 วินาที
 
         // Event listener for Save button
         document.getElementById('save').addEventListener('click', openVisit);

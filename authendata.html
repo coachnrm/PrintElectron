@@ -5,27 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
-    <div id="data-container">
-        <table id="authen-table" border="1">
-          <thead>
+<body > <!--style="border-style: double"-->
+    <div id="data-container" >
+        <table id="authen-table" !border="1">
+          <!-- <thead>
             <tr>
               <th>เลขบัตรประจำตัวประชาขน</th>
               <th>ชื่อ</th>
               <th>นามสกุล</th>
             </tr>
-          </thead>
+          </thead> -->
           <tbody>
             <!-- Data rows will be added here dynamically -->
           </tbody>
         </table>
     </div>
+    <style>
+        /* ตั้งค่าการพิมพ์ */
+        
+    
+        .centered-cell {
+            font-size: 18px;
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
 
     <script>
         window.addEventListener('DOMContentLoaded', async () => {
             try {
                 // Fetch authen data from the API
                 const data = await window.electronAPI.fetchAuthenData();
+                const patients = await fetch(`http://172.16.200.202:8089/api/Hos/getpatienthnimage?_cid=${data.pid}`).then(res => res.json());
+                const claimCode = await fetch(`http://localhost:8189/api/nhso-service/latest-authen-code/${data.pid}`).then(res => res.json());
                 const tableBody = document.getElementById('authen-table').querySelector('tbody');
                 if (data.error) {
                 // Display error message if there's an issue
@@ -40,6 +52,7 @@
                 const transformedData = {
                         authen: {
                             authenpid: data.pid,
+                            authenpname: data.fname+" "+data.lname,
                             authenfname: data.fname,
                             authenlname: data.lname,
                             authennation: data.nation,    // Nation Code
@@ -52,47 +65,167 @@
                             authenclaimTypes: data.claimTypes.map(claim => ({
                                 claimType: claim.claimType,       // Claim Type Code
                                 claimTypeName: claim.claimTypeName // Claim Type Name
-                            }))
+                            })),
+                            authenhospMainhcode: data.hospMain?.hcode || "10734",  // ใช้ค่าจาก hospMain.hcode ถ้ามี
+                            authenhospMainhname: data.hospMain?.hname || "รพ.สมุทรสาคร"  // ใช้ค่าจาก hospMain.hname ถ้ามี
+                            // authenhospMain: data.hospMain,
+                            // authenhospMainhcode1: data.hospMain.hcode,
+                            // authenhospMainhname1: data.hospMain.hname,
+                            // authenhospMainhcode : "10734",
+                            // authenhospMainhname : "รพ.สมุทรสาคร"
+                           
+                            // "hospMain": {
+                            //     "hcode": "10734",
+                            //     "hname": "รพ.สมุทรสาคร"
+                            // }
+                        }
+                    }; 
+
+                const transformedPaData = {
+                        authen: {
+                            authenhn: patients.hn,
+                            authenp: patients.pname
+                        }
+                    };
+                const transformedCData = {
+                        authen: {
+                            claimCode: claimCode.claimCode
                         }
                     };
 
                 // Create a new table row
                 const row = document.createElement('tr');
+                const hksmCellText = document.createElement('td');
+                hksmCellText.innerText = "โรงบาลสมุทรสาคร"
+                // hksmCellText.classList.add('centered-cell');
+                // hksmCellText.setAttribute('colspan', '3');
+                // Append cells to the row
+                row.appendChild(hksmCellText);
+                
 
                 // Create pid cell
+                const row1 = document.createElement('tr');
+                // const pidCellText = document.createElement('td');
                 const pidCell = document.createElement('td');
-                pidCell.innerText = transformedData.authen.authenpid;
-
+                // pidCellText.innerText = "เลขบัตรประชาชน : "
+                pidCell.innerText = "เลขบัตร : "+transformedData.authen.authenpid;
+                // pidCell.setAttribute('colspan', '2');
+                // row1.appendChild(pidCellText);
+                row1.appendChild(pidCell);
+                
+                
+                
+                // Create pid cell
+                const row2 = document.createElement('tr');
+                // const hnCellText = document.createElement('td');
+                const hnCell = document.createElement('td');
+                // hnCellText.innerText = "HN : "
+                hnCell.innerText = "HN : "+transformedPaData.authen.authenhn;
+                // hnCell.setAttribute('colspan', '2');
+                // row2.appendChild(hnCellText);
+                row2.appendChild(hnCell);
+                
+                
+                
                 // Create fname cell
-                const fnameCell = document.createElement('td');
-                fnameCell.innerText = transformedData.authen.authenfname;
+                const row3 = document.createElement('tr');
+                const fnameCellText = document.createElement('td');
+                // fnameCellText.style.width = '10px';
+                // const pCell = document.createElement('td');
+                // const pnameCell = document.createElement('td');
+                // const fnameCell = document.createElement('td');
+                // const lnameCell = document.createElement('td');
+                // fnameCellText.innerText = "ชื่อ-สกุล : "
+                // pCell.innerText = transformedPaData.authen.authenp;
+                // pnameCell.innerText = transformedData.authen.authenpname;
+                fnameCellText.innerText = "ชื่อ-สกุล : " + transformedPaData.authen.authenp + transformedData.authen.authenpname;
+                // lnameCell.innerText = transformedData.authen.authenlname;
+                // fnameCell.innerText = transformedData.authen.authenfname;
+                row3.appendChild(fnameCellText);
+                // row3.appendChild(pCell);
+                // row3.appendChild(pnameCell);
+                // row3.appendChild(fnameCell);
+                // row3.appendChild(lnameCell);
+                
+                const row4 = document.createElement('tr');
+                // const ClaimCellText = document.createElement('td');
+                const ClaimCell = document.createElement('td');
+                // ClaimCellText.innerText = "ClaimCode : "
+                // ClaimCell.innerText = "ClaimCode : "+transformedData.authen.authenclaimTypes[0]?.claimType;
+                ClaimCell.innerText = "ClaimCode : "+transformedCData.authen.claimCode;
+                // hnCell.setAttribute('colspan', '2');
+                // row4.appendChild(ClaimCellText);
+                row4.appendChild(ClaimCell);
+                
+                const row5 = document.createElement('tr');
+                // const DateCellText = document.createElement('td');
+                const DateCell = document.createElement('td');
+                // DateCellText.innerText = "วันที่ : "
+                const currentDate = new Date();
+                // ฟอร์แมตวันที่ในรูปแบบที่ต้องการ (ตัวอย่าง: "วันที่/เดือน/ปี ชั่วโมง:นาที:วินาที")
+                const formattedDate = currentDate.toLocaleString('th-TH', {
+                year: 'numeric',  // ปี (เช่น 2025)
+                month: 'short',    // เดือน (เช่น มกราคม)
+                day: 'numeric',   // วันที่ (เช่น 21)
+                hour: '2-digit',  // ชั่วโมง (เช่น 01, 02, ... 23)
+                minute: '2-digit',// นาที (เช่น 01, 02, ... 59)
+                second: '2-digit',// วินาที (เช่น 01, 02, ... 59)
+                hour12: false      // ใช้เวลา 24 ชั่วโมง
+                });
+                // แสดงผลลัพธ์ในเซลล์
+                DateCell.innerText = "วันที่ : "+formattedDate;
+                // DateCell.setAttribute('colspan', '2');
+                // row5.appendChild(DateCellText);
+                row5.appendChild(DateCell);
+                // Create pid cell
+                const row6 = document.createElement('tr');
+                // const hnCellText = document.createElement('td');
+                const SubInsclCell = document.createElement('td');
+                // hnCellText.innerText = "HN : "
+                SubInsclCell.innerText = "สิทธิ : "+transformedData.authen.authensubInscl;
+                // hnCell.setAttribute('colspan', '2');
+                // row2.appendChild(hnCellText);
+                row6.appendChild(SubInsclCell);
 
-                // Create lname cell
-                const lnameCell = document.createElement('td');
-                lnameCell.innerText = transformedData.authen.authenlname;
-
-                // Append cells to the row
-                row.appendChild(pidCell);
-                row.appendChild(fnameCell);
-                row.appendChild(lnameCell);
+                const row7 = document.createElement('tr');
+                // const hnCellText = document.createElement('td');
+                const hospMainCell = document.createElement('td');
+                // hnCellText.innerText = "HN : "
+                hospMainCell.innerText = "       "+"         ("+transformedData.authen.authenhospMainhcode +") "+transformedData.authen.authenhospMainhname;
+                // hnCell.setAttribute('colspan', '2');
+                // row2.appendChild(hnCellText);
+                row7.appendChild(hospMainCell);
 
                 // Append the row to the table body
                 tableBody.appendChild(row);
+                tableBody.appendChild(row5);
+                tableBody.appendChild(row1);
+                tableBody.appendChild(row2);
+                tableBody.appendChild(row3);
+                tableBody.appendChild(row4);
+                tableBody.appendChild(row6);
+                tableBody.appendChild(row7);
 
                 // Trigger print automatically after data is rendered
                 window.electronAPI.printDocument();
-
+                // window.location.href = './autheninput.html'; // เปลี่ยน URL ไปยังหน้าที่ต้องการ
+                 // ดีเลย์ 3 วินาที (3000 มิลลิวินาที) ก่อนเปลี่ยนหน้า
+                
                 }        
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('กรุณาเสียบบัตร', error);
                 const tableBody = document.getElementById('authen-table').querySelector('tbody');
                 const errorRow = document.createElement('tr');
                 const errorCell = document.createElement('td');
                 errorCell.colSpan = 3;
-                errorCell.innerText = 'Error fetching data. Please try again.';
+                errorCell.innerText = `Error: ${error.message}`;
+                // errorCell.innerText = 'กรุณาเสียบบัตร';
                 errorRow.appendChild(errorCell);
                 tableBody.appendChild(errorRow);
             }
+            setTimeout(function() {
+                    window.location.href = 'autheninput.html'; // เปลี่ยนเส้นทางไปยัง home.html
+                }, 10000); // ระยะเวลาในมิลลิวินาที
         });
     </script>
 </body>

@@ -6,8 +6,8 @@ let mainWindow;
 
 app.on('ready', () => {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 850,
+    height: 1250,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -15,7 +15,7 @@ app.on('ready', () => {
     },
   });
 
-  mainWindow.loadFile('index.html');
+  mainWindow.loadFile('autheninput.html');
 
   // Uncomment to open DevTools if needed
   // mainWindow.webContents.openDevTools();
@@ -66,7 +66,7 @@ ipcMain.handle('open-visit', async (event, hn) => {
 };
 
   try {
-    const response = await axios.post('http://localhost:5094/api/Hos/OpenVisitWithKey', requestBody, {
+    const response = await axios.post('http://172.16.200.202:8089/api/Hos/OpenVisitWithKey', requestBody, {
       headers: {
         'Content-Type': 'application/json',
       },
